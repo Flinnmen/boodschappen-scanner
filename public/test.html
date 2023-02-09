@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>101Mailz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      media="screen"
+      href="/css/index.css"
+    />
+  </head>
+  <body>
+    <div id="optelForm">
+      <h1>BAS</h1>
+      <form action="auth" method="POST"> 
+        <input
+          id="getalA"
+          type="text"
+          name="getalA"
+          placeholder="Voer hier het eerste getal in"
+          value="22"
+          required
+        />
+        <input
+          id="getalB"
+          type="text"
+          name="getalB"
+          placeholder="Voer hier het tweede getal in"
+          value="6"
+          required
+        />
+        <button id="submit" type="submit" id="optelBtn">Optellen</button>
+      </form>
+    </div> 
+
+    <div id="errorMessage"></div>
+
+    <div id="wrongAttempts"></div>
+  </body>
+
+  <script async defer>
+    const form = document.getElementById("optelForm");
+
+    async function start() {
+      const waarde1 = document.getElementById("getalA").value.trim();
+      const waarde2 = document.getElementById("getalB").value.trim();
+      
+      submitInputs(waarde1, waarde2);
+    }
+    
+    form.addEventListener("submit", (e) => {
+      e.preventDefault(); // Prevent the form from submitting
+
+      unsetError();
+      start();
+     
+    });
+
+    function unsetError() {
+      const errMsg = document.getElementById("errorMessage");
+      errMsg.style = "display: none";
+    }
+
+    function setError(errorMessage) {
+      const errMsg = document.getElementById("errorMessage");
+      errMsg.style = "display: block";
+      errMsg.textContent = errorMessage;
+    }
+
+    async function submitInputs(getalA, getalB) {
+      const data = {
+        a: getalA,
+        b: getalB,
+      };
+
+      const response = await fetch("/api/optellen", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      
+      const result = await response.json();
+      setError(result.message);
+    }
+    
+    // event = keyup or keydown
+    document.addEventListener('keyup', event => {
+      if (event.code !== 'Space') {
+        return;
+      }
+      start();
+    })
+    
+  </script>
+</html>

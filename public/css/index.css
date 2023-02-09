@@ -1,0 +1,17 @@
+  body {
+  font-size: 16px;
+}
+
+input {
+  display: block;
+  margin-top: 0.2rem;
+}
+
+#errorMessage {
+  display: none; /* Only display when needed */
+/*   width: 10rem; */
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: hsla(354, 100%, 69%, 1);
+  color: hsla(354, 100%, 10%, 1);
+}
