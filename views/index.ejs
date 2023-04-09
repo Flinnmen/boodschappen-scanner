@@ -7,6 +7,7 @@
     <title>Boodschappen Aanbiedingen Scanner</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="/css/main.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 
@@ -39,22 +40,21 @@
 
     <!-- header section eindigt-->
     
-    <form>
-        <div class="form-group">
+    <form action="receive" method="POST">
         </div>
         <div class="form-group">
           <label for="document-content">Vul hier uw boodschappen in</label>
-          <textarea id="document-content" name="document-content"></textarea>
-          <button id="submit" onclick="getInput()">Submit</button>   
+          <input type="text" id="document-content" name="lijst" value="test">
+          <input type="submit" class="float" value="submit"> 
         </div>
-
       </form>
   
   <div id="searchOutput"></div>
-  <%= locals.top3 %>
   <div id=TopDrie> 
     <p>De goedkoopste supermarkten voor uw product(en) zijn:</p>
-    <%= locals.top3 %>
+    <div id="scroll">
+      <%- locals.top3 %>
+    </div>
   </div>
 
   
@@ -63,7 +63,7 @@
 
   <script>
 
-    function getInput() {
+    /*function getInput() {
       boodschappenlijst = document.getElementById('document-content').value;
       test(boodschappenlijst);
     }
@@ -73,7 +73,7 @@
     async function test(boodschappenlijst) {
       const data = {a: boodschappenlijst};
 
-      const response = await fetch("/api", {
+      const response = await fetch("index", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -84,6 +84,13 @@
       const result = await response.json();
       setError(result.message);
     }
+    
+    async function getData() {
+			const response = await fetch("/api");
+			const data = await response.json();
+			document.getElementById("my-output").innerHTML = data.message;
+		}
+    
     
   </script>  
 </body>

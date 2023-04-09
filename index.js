@@ -6,18 +6,17 @@ const morgan = require("morgan");
 const app = express();
 var products
 const port = 3000;
+url = "https://raw.githubusercontent.com/supermarkt/checkjebon/main/data/supermarkets.json"
 
-//boodschappenlijst = "kaas"
-
-console.log("test")
-
-function fetchJson(boodschappenlijst){
-  fetch("https://raw.githubusercontent.com/supermarkt/checkjebon/main/data/supermarkets.json")
-    .then(response => response.json())
-    .then(json => JsonVar(json, boodschappenlijst));
+async function logJSONData() {
+  const response = await fetch(url);
+  const jsonData = await response.json();
+  console.log(jsonData)
+  return jsonData
 }
 
 async function JsonVar(json, boodschappenlijst) {
+  console.log(json)
   boodschappen = boodschappenlijst.split(',')
   products = json
   let resultJson = {}
@@ -34,7 +33,7 @@ async function JsonVar(json, boodschappenlijst) {
         resultJson[x][product.n] = {
           p: product.p, 
           s: product.s, 
-          prijsPerHoeveelheid: result.prijsPerHoeveelheid, 
+          prijsPerHoeveelheid: result.prijsPerHoeveelheid,
           PPH: result.pph,
           markt: products[i].n
         }
@@ -48,19 +47,21 @@ async function JsonVar(json, boodschappenlijst) {
     console.log(sortedData)
     console.log(Object.keys(sortedData[x]))
   } 
-  getTop(sortedData)
+  output = getTop(sortedData)
+  return output
 }
 
 function getTop(data){
-  let output = ""
+  let output = `<br>`
   for (let x = 0; x < Object.keys(data).length; x++) {
     arr = Object.keys(data[x])
     top3 = arr.slice(0, 3)
     for (let y = 0; y < 3; y++) {
-      output += data[x][top3[y]].markt
+      output += `${top3[y]} <br>  	${data[x][top3[y]].prijsPerHoeveelheid}<br>  ${data[x][top3[y]].p}<br>  ${data[x][top3[y]].s}<br>  ${data[x][top3[y]].markt}<br><br>`
     }
   }
   console.log(output)
+  return output
 }
 
 function convertUnits(input) {
@@ -145,7 +146,7 @@ async function search(searchString, i) {
   }
   return {
     bestMatch: bestMatch,
-    prijsPerHoeveelheid: `${bestPPH} euro per ${bestUnit}`,
+    prijsPerHoeveelheid: `${Math.round((bestPPH + Number.EPSILON) * 100) / 100} euro per ${bestUnit}`,
     pph: bestPPH
   };
 }
@@ -153,16 +154,28 @@ async function search(searchString, i) {
 app.use(express.json());
 app.use(morgan("common"));
 app.use(express.static("public"));
-//app.set("view engine", "ejs");
+app.set("view engine", "ejs");
+var bodyParser = require('body-parser'); 
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(bodyParser.json());
 
-app.post("/api", async (req, res) => {
-  console.log(req.body.a)
-  fetchJson(req.body.a)
+app.post("/receive", async function(req, res) {
+  //fetchJson(req.body.lijst)
+  console.log(req.body.lijst)
+  data = await logJSONData()
+  console.log(data)
+  output = await JsonVar(data, req.body.lijst)
+  console.log(output)
+  res.locals.top3 = output
+  res.render("index")
 });
 
-/*app.get("/", function(req, res){
+app.get("/", async function(req, res){
   res.render("index")
-})*/
+})
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

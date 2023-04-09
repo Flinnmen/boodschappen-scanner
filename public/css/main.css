@@ -184,6 +184,12 @@ button:hover {
     background-color: #3e8e41;
 }
 
+#scroll {
+  overflow-y: scroll,
+  overflow: auto,
+  height: 400px
+}
+
 #TopDrie {
     font-size: 2em;
     color: black;
